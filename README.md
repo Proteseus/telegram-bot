@@ -1,4 +1,5 @@
-# telegram-bot
-test telegram bot
-#@Leviticusbot
-#Hosted on heroku
+# telegram-bot  
+Personal telegram bot (WIP)
+
+Bot: **[Leviticusbot](https://@Leviticusbot)**  
+__Hosted on heroku__
