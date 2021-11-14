@@ -25,6 +25,12 @@ def sample_responses(input_text):
     if user_message in ("who are you", "who are you?"):
         return "I am Bo-bot"
     
+    if user_message in ("levi"):
+        return "That's the name of my creator. You can reach him at @Leviticus_98."
+    
+    if user_message in ("who made you", "who made you?"):
+        return "My creator is Levi. You can reach him at @Leviticus_98."
+    
     if user_message in ("time", "what time is it?", "what time is it"):
         now = datetime.now()
         date_time = now.strftime("%d-%m-%y, %H:%M:%S")

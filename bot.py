@@ -48,7 +48,7 @@ def message_hanler(update, context):
     global text
     text= str(update.message.text).lower()
     print(text)
-    salute = {"hi", "hello", "who are you", "who are you?", "time", "what time is it?", "what time is it"}
+    salute = {"hi", "hello", "who are you", "who are you?", "time", "what time is it?", "what time is it", "levi", "who made you?", "who made you"}
     if text in salute:
         response = R.sample_responses(text)
         update.message.reply_text(response)
@@ -57,6 +57,9 @@ def message_hanler(update, context):
             update.message.reply_text(book_func(text, update))
         else:
             update.message.reply_text("Unknown request")
+            
+def about(update, context):
+    update.message.reply_text("I'm a simple personal bot made to serve my creator, @Leviticus_98")
 
 def book_func(bookName, update):
     if(bookName[0] != "/"):
@@ -131,6 +134,7 @@ def main():
     dp.add_handler(CommandHandler("start_menu", M.start_menu))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("book", book))
+    dp.add_handler(CommandHandler("about", about))
     #dp.add_handler(CommandHandler(bookId, getBookId))
     dp.add_handler(MessageHandler(Filters.text , message_hanler))
     #dp.add_handler(CommandHandler(Filters.command, getBookId))
