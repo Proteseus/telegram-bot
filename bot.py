@@ -1,13 +1,16 @@
+#Author - Debrye
+from typing import Pattern
 import BookResp as BookRes
 import Responses as R
 import Menus as M
+import CovRep as Cov
 import logging
 from urllib import request
 from telegram import  InlineQueryResultArticle, InputTextMessageContent, ParseMode, Update, InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
 from telegram.ext import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
 from uuid import uuid4
 import os
-import requests
+import telepot
 
 PORT = int(os.environ.get('PORT', 5000))
 
@@ -15,7 +18,7 @@ PORT = int(os.environ.get('PORT', 5000))
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
-TOKEN = '345076322:AAGCUBpqKatKO62jGm31C8azjy-HLNu9kJk'
+TOKEN = '345076322:AAEGAPyYAzCJSAWXk9WjvJgmwGU69EonAms'
 
 status = open("status.txt", 'w')
 state = "not_book"
@@ -27,8 +30,9 @@ def start(update, context):
     update.message.reply_text('Hi!')
 
 def help(update, context):
-    """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    #Send a message when the command /help is issued.
+    help_str = ("{}" "\n" "{}" "\n" "{}" "\n" "{}" "\n" "{}").format("For time, ask 'time', 'what time is it',", "For books, ask /book,", "For bot's identity, ask 'who are you' or /about", "For author's info, ask 'who made you'", "For Covid report, ask /covid")
+    update.message.reply_text(help_str)
 
 """def echo(update, context):
     Echo the user message.
@@ -42,24 +46,42 @@ def book(update, context):
     res.write(state)
     update.message.reply_text('What book do you want to look for?', reply_markup=ForceReply(), input_field_placeholder="type book name...")
     
-def message_hanler(update, context):
+def message_handler(update, context):
     with open("status.txt", "r") as status:
         state = status.read()
     global text
     text= str(update.message.text).lower()
     print(text)
-    salute = {"hi", "hello", "who are you", "who are you?", "time", "what time is it?", "what time is it", "levi", "who made you?", "who made you"}
-    if text in salute:
-        response = R.sample_responses(text)
-        update.message.reply_text(response)
+    print(state)
+    salute = {"hi", "hello", "who are you", "who are you?", "time", "what time is it?", "what time is it", "levi", "who made you?", "who made you", "help"}
+    if state == "book":
+        update.message.reply_text(book_func(text, update))
+        state = "not_book"
+        with open("status.txt", 'w') as status2:
+            status2.write(state)
+    elif text[0] == "/":
+        book_func(text, update)
+        print ("Downloading......")
     else:
-        if state == "book":
-            update.message.reply_text(book_func(text, update))
+        if text in salute:
+            response = R.sample_responses(text)
+            update.message.reply_text(response)
         else:
             update.message.reply_text("Unknown request")
             
 def about(update, context):
     update.message.reply_text("I'm a simple personal bot made to serve my creator, @Leviticus_98")
+    
+"""def covid(update, context):
+    Cov.get_country()
+    reportC = Cov.report_printer()
+    update.message.reply_text(reportC)
+    print("Local report retrieved")
+
+    Cov.get_global()
+    reportG = Cov.report_printer()
+    update.message.reply_text(reportG)
+    print("Global report retrieved")"""
 
 def book_func(bookName, update):
     if(bookName[0] != "/"):
@@ -69,9 +91,18 @@ def book_func(bookName, update):
     else:
         bookID = bookName[1:9]
         print("Book ID: " + bookID)
-        if(get_link(bookID)!=None):
-            file = file_downloader(get_link(bookID))
-            update.message.send_file()
+        if(BookRes.get_link(bookID)!=None):
+            BookRes.file_downloader(BookRes.get_link(bookID), BookRes.get_title(bookID))
+            update.message.reply_text(BookRes.get_link(bookID))
+            #update.message.send_file(file)
+            
+            bot = telepot.Bot('TOKEN')
+            output_file = open(BookRes.get_title(bookID), 'rb')
+            #send document by chat id
+            bot.sendDocument("344776272", output_file)
+            purge()
+
+
 
 def inline_command(update, context):
     query = update.inline_query.query
@@ -86,16 +117,7 @@ def inline_command(update, context):
         )
     ]
     update.inline_query.answer(results)
-
-
-def get_link(bookID):
-    for id in BookRes.dataSnippet:
-        if(bookID) == id['file_id']:
-            return id['file_link']
-        
-def file_downloader(link):
-    return request.urlretrieve(link)
-    
+   
 def getBookId(update, context):
     update.message.reply_text("test")
 
@@ -109,9 +131,9 @@ def purge():
     filtered_files = [file for file in files_in_directory if file.endswith(".epub")]
 
     for file in filtered_files:
-	    path_to_file = os.path.join(directory, file)
-	    os.remove(path_to_file)
- 
+        path_to_file = os.path.join(directory, file)
+        os.remove(path_to_file)
+
     if os.path.exists("results.json"):
         os.remove("results.json")
     
@@ -120,7 +142,7 @@ def purge():
 
 
 
-
+#--------------------------------------------------------#
 def main():
     purge()
     
@@ -132,11 +154,12 @@ def main():
     global bookId
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start_menu", M.start_menu))
-    dp.add_handler(CommandHandler("help", help))
+    #dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("book", book))
     dp.add_handler(CommandHandler("about", about))
-    #dp.add_handler(CommandHandler(bookId, getBookId))
-    dp.add_handler(MessageHandler(Filters.text , message_hanler))
+    dp.add_handler(CommandHandler("covid", Cov.start_covrep_option))
+    dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(MessageHandler(Filters.text , message_handler))
     #dp.add_handler(CommandHandler(Filters.command, getBookId))
     dp.add_handler(InlineQueryHandler(inline_command))
     #####menu_handlers######
@@ -146,6 +169,10 @@ def main():
     dp.add_handler(CallbackQueryHandler(M.second_menu, pattern='m2'))
     dp.add_handler(CallbackQueryHandler(M.first_submenu, pattern='m1_1'))
     dp.add_handler(CallbackQueryHandler(M.second_submenu, pattern='m2_1'))
+
+    dp.add_handler(CallbackQueryHandler(Cov.main_menu, pattern='cov_main'))
+    dp.add_handler(CallbackQueryHandler(Cov.first_menu, pattern='eth'))
+    dp.add_handler(CallbackQueryHandler(Cov.second_menu, pattern='global'))
     
 
     # on noncommand i.e message - echo the message on Telegram
@@ -158,7 +185,7 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
                           url_path=TOKEN)
-    updater.bot.setWebhook('https://test-bot-levi.herokuapp.com/' + TOKEN)
+    updater.bot.setWebhook('https://test-bot-leviathan.herokuapp.com/' + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since

@@ -8,6 +8,7 @@ from bot import book
 url = "https://filepursuit.p.rapidapi.com/"
 
 
+bookName='hyperion'
 #search for the book
 def get_book_opt(bookName):
     querystring = {"q":bookName,"filetype":"epub","type":"ebook"}
@@ -59,10 +60,23 @@ def bookResPrinter():
 def getBookFiles():
     telegram.Bot.get_file()
 
-"""def bookId():
-    with open("response.txt", "r") as resp:
-        for '\n' in resp:
-            i=0
-            while i<7:
-                resp.readline
-   """     
+def get_link(bookID):
+    for id in dataSnippet:
+        if(bookID) == id['file_id']:
+            return id['file_link']
+
+def get_title(bookID):
+    for id in dataSnippet:
+        if(bookID) == id['file_id']:
+            return id['file_name']
+
+        
+def file_downloader(link, title):
+    fileName = ('.\{}').format(title)
+    req = requests.get(link)
+    file = open(fileName, 'wb')
+    for chunk in req.iter_content(10000000000):
+        file.write(chunk)
+        file.close()
+    print("Downloaded")
+      

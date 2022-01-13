@@ -35,5 +35,4 @@ def sample_responses(input_text):
         now = datetime.now()
         date_time = now.strftime("%d-%m-%y, %H:%M:%S")
         return str(date_time)
-    
     return "I don't understand you"
