@@ -45,7 +45,7 @@ def news_printer(f):
     key=['title', 'url', 'snippet', 'datePublished']
     news=''
     for k in key:
-        news += str(my_dict['value'][f][k]) + " "
+        news += str(my_dict['value'][f][k]) + "\n"
     news += "provider: " + str(my_dict['value'][f]['provider']['name'])
     return news
 
