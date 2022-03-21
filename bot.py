@@ -1,9 +1,10 @@
 #Author - Debrye
-from typing import Pattern
+import starter as St
 import BookResp as BookRes
 import Responses as R
 import Menus as M
 import CovRep as Cov
+import TrendingNewsMenu as TRN
 import logging
 from urllib import request
 from telegram import  InlineQueryResultArticle, InputTextMessageContent, ParseMode, Update, InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
@@ -20,10 +21,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 TOKEN = '345076322:AAEGAPyYAzCJSAWXk9WjvJgmwGU69EonAms'
 
-status = open("status.txt", 'w')
-state = "not_book"
-status.write(state)
-
 #####command handlers#####
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -31,7 +28,7 @@ def start(update, context):
 
 def help(update, context):
     #Send a message when the command /help is issued.
-    help_str = ("{}" "\n" "{}" "\n" "{}" "\n" "{}" "\n" "{}").format("For time, ask 'time', 'what time is it',", "For books, ask /book,", "For bot's identity, ask 'who are you' or /about", "For author's info, ask 'who made you'", "For Covid report, ask /covid")
+    help_str = R.help()
     update.message.reply_text(help_str)
 
 """def echo(update, context):
@@ -93,10 +90,9 @@ def book_func(bookName, update):
         print("Book ID: " + bookID)
         if(BookRes.get_link(bookID)!=None):
             BookRes.file_downloader(BookRes.get_link(bookID), BookRes.get_title(bookID))
-            update.message.reply_text(BookRes.get_link(bookID))
-            #update.message.send_file(file)
+            #update.message.reply_text(BookRes.get_link(bookID))
             
-            bot = telepot.Bot('TOKEN')
+            bot = telepot.Bot(TOKEN)
             output_file = open(BookRes.get_title(bookID), 'rb')
             #send document by chat id
             bot.sendDocument("344776272", output_file)
@@ -145,6 +141,7 @@ def purge():
 #--------------------------------------------------------#
 def main():
     purge()
+    St.starter()
     
     """Start the bot."""
     updater = Updater(TOKEN, use_context=True)
@@ -158,6 +155,7 @@ def main():
     dp.add_handler(CommandHandler("book", book))
     dp.add_handler(CommandHandler("about", about))
     dp.add_handler(CommandHandler("covid", Cov.start_covrep_option))
+    dp.add_handler(CommandHandler("news", TRN.start_trend_option))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(MessageHandler(Filters.text , message_handler))
     #dp.add_handler(CommandHandler(Filters.command, getBookId))
@@ -173,6 +171,12 @@ def main():
     dp.add_handler(CallbackQueryHandler(Cov.main_menu, pattern='cov_main'))
     dp.add_handler(CallbackQueryHandler(Cov.first_menu, pattern='eth'))
     dp.add_handler(CallbackQueryHandler(Cov.second_menu, pattern='global'))
+
+    dp.add_handler(CallbackQueryHandler(TRN.main_menu, pattern='news_main'))
+    dp.add_handler(CallbackQueryHandler(TRN.trend_menu, pattern='trn'))
+    dp.add_handler(CallbackQueryHandler(TRN.next_menu, pattern='next'))
+    dp.add_handler(CallbackQueryHandler(TRN.prev_menu, pattern='prev'))
+    
     
 
     # on noncommand i.e message - echo the message on Telegram

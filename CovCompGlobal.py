@@ -25,6 +25,13 @@ def get_global():
 
     elif (response.status_code == 404):
         print("Result not found!")
+        with open("report_covid.txt", "w") as ro:
+            ro.write("Result not found!")
+    elif(response.status_code == 502):
+        print("API DOWN")
+        with open("report_covid.txt", "w") as ro:
+            ro.write("API DOWN")
+    
 
 def report_printer():
     global report_covid

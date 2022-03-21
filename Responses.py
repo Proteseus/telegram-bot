@@ -12,7 +12,7 @@ def time_meridian():
     return time_str
 
 def sample_responses(input_text):
-    user_message =str(input_text).lower()
+    user_message = str(input_text).lower()
     
     if user_message in ("hello", "hi"):
         if time() <= 8 and time() >= 5 and time_meridian() == "PM": 
@@ -36,3 +36,7 @@ def sample_responses(input_text):
         date_time = now.strftime("%d-%m-%y, %H:%M:%S")
         return str(date_time)
     return "I don't understand you"
+
+def help():
+    help_str = ("{}" "\n" "{}" "\n" "{}" "\n" "{}" "\n" "{}").format("For time, ask 'time', 'what time is it',", "For books, ask /book,", "For bot's identity, ask 'who are you' or /about", "For author's info, ask 'who made you'", "For Covid report, ask /covid")
+    return help_str
