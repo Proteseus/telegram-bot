@@ -39,12 +39,12 @@ def book(update, context):
     """Send a message when the command /book is issued."""
     global state 
     state = "book"
-    res = open("status.txt", "w")
+    res = open("bookStatus.txt", "w")
     res.write(state)
     update.message.reply_text('What book do you want to look for?', reply_markup=ForceReply(), input_field_placeholder="type book name...")
     
 def message_handler(update, context):
-    with open("status.txt", "r") as status:
+    with open("bookStatus.txt", "r") as status:
         state = status.read()
     global text
     text= str(update.message.text).lower()
@@ -54,7 +54,7 @@ def message_handler(update, context):
     if state == "book":
         update.message.reply_text(book_func(text, update))
         state = "not_book"
-        with open("status.txt", 'w') as status2:
+        with open("bookStatus.txt", 'w') as status2:
             status2.write(state)
     elif text[0] == "/":
         book_func(text, update)

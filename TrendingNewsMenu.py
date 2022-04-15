@@ -35,8 +35,9 @@ def dwn():
 
 def res():
     with open('trendingCount.txt','w') as d:
-                d.write('-1')
-
+        if(d.write('-1')):
+            print('count reset...')
+        
 def news_printer(f):
     with open('trending_news.json', 'r') as St:
         my_dict = json.load(St)
@@ -64,6 +65,9 @@ def menu_picker():
 
 ######menus######
 def start_trend_option(update, context):
+    with open('trendingCount.txt', 'r') as trc:
+        tr = trc.read()
+        print(tr)
     res()
     update.message.reply_text(main_menu_message(),
                             reply_markup=main_menu_keyboard())
@@ -117,6 +121,7 @@ def last_menu_keyboard():
     return InlineKeyboardMarkup(keyboard)
 
 #####message######
+#print interactive message
 def main_menu_message():
     TN.get_News()
     return 'Trending News'
@@ -128,7 +133,6 @@ def first_menu_message():
         n = upp()
     else:
         n = int(f)
-
     strT = news_printer(n)
     print(strT)
     return strT
