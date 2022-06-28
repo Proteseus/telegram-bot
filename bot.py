@@ -11,6 +11,7 @@ from telegram import  InlineQueryResultArticle, InputTextMessageContent, ParseMo
 from telegram.ext import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
 from uuid import uuid4
 import os
+import schedule as SCH
 import telepot
 
 PORT = int(os.environ.get('PORT', 5000))
@@ -79,6 +80,9 @@ def about(update, context):
     reportG = Cov.report_printer()
     update.message.reply_text(reportG)
     print("Global report retrieved")"""
+
+def schedule(update, context):
+    update.message.reply_text(SCH.schedule())
 
 def book_func(bookName, update):
     if(bookName[0] != "/"):
@@ -157,6 +161,7 @@ def main():
     dp.add_handler(CommandHandler("covid", Cov.start_covrep_option))
     dp.add_handler(CommandHandler("news", TRN.start_trend_option))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("schedule", schedule))
     dp.add_handler(MessageHandler(Filters.text , message_handler))
     #dp.add_handler(CommandHandler(Filters.command, getBookId))
     dp.add_handler(InlineQueryHandler(inline_command))
