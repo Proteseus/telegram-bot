@@ -77,6 +77,7 @@ def get_title(bookID):
             name = id['file_name'].replace('.epub', '.txt')            
             return name
 
+        
 def file_downloader(link, title):
     fileName = ('.\{}').format(title)
     req = requests.get(link)
@@ -85,3 +86,4 @@ def file_downloader(link, title):
         file.write(chunk)
         file.close()
     print("Downloaded")
+      

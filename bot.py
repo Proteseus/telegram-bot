@@ -8,7 +8,7 @@ import TrendingNewsMenu as TRN
 import logging
 from urllib import request
 from telegram import  InlineQueryResultArticle, InputTextMessageContent, ParseMode, Update, InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from telegram import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
+from telegram.ext import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
 from uuid import uuid4
 import os
 import schedule as SCH
@@ -40,12 +40,12 @@ def book(update, context):
     """Send a message when the command /book is issued."""
     global state 
     state = "book"
-    res = open("status.txt", "w")
+    res = open("bookStatus.txt", "w")
     res.write(state)
     update.message.reply_text('What book do you want to look for?', reply_markup=ForceReply(), input_field_placeholder="type book name...")
     
 def message_handler(update, context):
-    with open("status.txt", "r") as status:
+    with open("bookStatus.txt", "r") as status:
         state = status.read()
     global text
     text= str(update.message.text).lower()
@@ -55,7 +55,7 @@ def message_handler(update, context):
     if state == "book":
         update.message.reply_text(book_func(text, update))
         state = "not_book"
-        with open("status.txt", 'w') as status2:
+        with open("bookStatus.txt", 'w') as status2:
             status2.write(state)
     elif text[0] == "/":
         book_func(text, update)
@@ -80,11 +80,12 @@ def about(update, context):
     reportG = Cov.report_printer()
     update.message.reply_text(reportG)
     print("Global report retrieved")"""
+    
 
 def schedule(update, context):
     update.message.reply_text(SCH.schedule())
 
-def book_func(bookName, update):
+def book_func(update, context, bookName):
     if(bookName[0] != "/"):
         BookRes.get_book_opt(bookName)
         BookRes.bookResPrinter()
@@ -93,14 +94,14 @@ def book_func(bookName, update):
         bookID = bookName[1:9]
         print("Book ID: " + bookID)
         if(BookRes.get_link(bookID)!=None):
-            BookRes.file_downloader(BookRes.get_link(bookID), BookRes.get_title(bookID))
+            # BookRes.file_downloader(BookRes.get_link(bookID), BookRes.get_title(bookID))
             #update.message.reply_text(BookRes.get_link(bookID))
             
-            bot = telepot.Bot(TOKEN)
-            output_file = open(BookRes.get_title(bookID), 'rb')
+            pbot = telepot.Bot(TOKEN)
+            # output_file = open(BookRes.get_title(bookID), 'rb')
             #send document by chat id
-            bot.sendDocument("344776272", output_file)
-            purge()
+        context.bot.sendDocument("344776272", BookRes.get_link(bookID))
+        purge()
 
 
 
