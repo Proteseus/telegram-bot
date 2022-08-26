@@ -8,7 +8,7 @@ import TrendingNewsMenu as TRN
 import logging
 from urllib import request
 from telegram import  InlineQueryResultArticle, InputTextMessageContent, ParseMode, Update, InlineKeyboardButton, InlineKeyboardMarkup, ForceReply
-from telegram.ext import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
+from telegram import Updater, CallbackQueryHandler, ConversationHandler, CommandHandler, MessageHandler, Filters, CallbackContext, InlineQueryHandler
 from uuid import uuid4
 import os
 import schedule as SCH
