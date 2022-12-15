@@ -20,7 +20,8 @@ PORT = int(os.environ.get('PORT', 5000))
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
-TOKEN = '345076322:AAEGAPyYAzCJSAWXk9WjvJgmwGU69EonAms'
+#add in token from botFather
+TOKEN = ''
 
 #####command handlers#####
 def start(update, context):
@@ -194,7 +195,8 @@ def main():
     updater.start_webhook(listen="0.0.0.0",
                           port=int(PORT),
                           url_path=TOKEN)
-    updater.bot.setWebhook('https://test-bot-leviathan.herokuapp.com/' + TOKEN)
+    #add url to host
+    updater.bot.setWebhook('' + TOKEN)
 
     # Run the bot until you press Ctrl-C or the process receives SIGINT,
     # SIGTERM or SIGABRT. This should be used most of the time, since
